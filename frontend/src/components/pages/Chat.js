@@ -50,26 +50,29 @@ const Chat = () => {
       });
 
       socketRef.current.on('connect', () => {
-        console.log('Connected to backend socket');
+        // console.log('Connected to backend socket');
         socketRef.current.emit('joinRoom', roomName);
       });
 
       socketRef.current.on('previousMessages', (previousMessages) => {
+        console.log(previousMessages);
         setMessages(previousMessages);
       });
 
       socketRef.current.on('chatMessage', (message) => {
-        console.log(message);
+        // console.log(message);
         setMessages((prevMessages) => [...prevMessages, message]);
       });
 
       socketRef.current.on('updateActiveUsers', (activeUsers) => {
-        console.log('Active users:', activeUsers);
+        // console.log('Active users:', activeUsers);
       });
 
       return () => {
         window.removeEventListener('beforeunload', handleUnload);
-        socketRef.current.disconnect();
+        if (socketRef.current) {
+          socketRef.current.disconnect();
+        }
       };
     }
   }, [isValidRoom, roomName]); // Reconnect when roomName changes and room is valid

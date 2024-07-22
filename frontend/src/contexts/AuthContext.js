@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
         if (response.status === 200) {
           const username = response.data.user.username;
           setUser({ name: username, isAuthenticated: true });
-          console.log("User authenticated:", response.data.user);
+          // console.log("User authenticated:", response.data.user);
         }
       } catch (err) {
         console.log("Auth check failed:", err);

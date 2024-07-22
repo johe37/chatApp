@@ -12,8 +12,14 @@ function emitActiveUsersList() {
 }
 
 function emitPreviousMessages(socket, roomName) {
-  const messages = rooms[roomName].messages;
-  socket.emit('previousMessages', messages);
+  if (rooms[roomName] && rooms[roomName].messages) {
+    const messages = rooms[roomName].messages;
+    // console.log(`Emitting ${messages.length} previous messages for room ${roomName}`);
+    socket.emit('previousMessages', messages);
+  } else {
+    // console.log(`No messages found for room ${roomName}`);
+    socket.emit('previousMessages', []);
+  }
 }
 
 function emitChatMessage(socket, roomName) {
@@ -69,7 +75,9 @@ export default function initializeChatSocket(server, sessionMiddleware) {
         if (!rooms[roomName]) {
           rooms[roomName] = { users: [], messages: [] };
         }
-        rooms[roomName].users.push(sessionUsername);
+        if (!rooms[roomName].users.includes(sessionUsername)) {
+          rooms[roomName].users.push(sessionUsername);
+        }
         emitPreviousMessages(socket, roomName);
         emitActiveUsersList();
         emitChatMessage(socket, roomName);
