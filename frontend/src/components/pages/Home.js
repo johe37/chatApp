@@ -8,6 +8,8 @@ const Home = () => {
   const [roomName, setRoomName] = useState('');
   const [rooms, setRooms] = useState([]);
   const navigate = useNavigate(); // Initialize navigate
+  const [warning, setWarning] = useState(''); // New state for warning
+
 
   useEffect(() => {
     // Fetch available chat rooms from the backend
@@ -19,8 +21,8 @@ const Home = () => {
   }, []);
 
   const handleCreateRoom = async () => {
-    if (roomName.trim()) {
-
+    if (roomName && roomName.trim()) {
+      setWarning(''); // Clear any previous warning
       try {
         const response = await axios.post(`${backendEndpoint}/api/rooms`, { name: roomName }, { withCredentials: true });
         if (response.data.success) {
@@ -29,9 +31,13 @@ const Home = () => {
       } catch(error) {
         console.error('Error creating room', error);
         const errorResp = error.response.data.message;
-        errorResp ? alert(errorResp) : alert('Error creating room');
+        setWarning(errorResp);
+        // errorResp ? alert(errorResp) : alert('Error creating room');
       }
       setRoomName('');
+    }
+    else {
+      setWarning('Please enter a room name!'); // Show warning
     }
   };
 
@@ -52,6 +58,7 @@ const Home = () => {
           placeholder="Enter room name"
         />
         <button onClick={handleCreateRoom}>Create</button>
+        {warning && <p style={{ color: 'red' }}>{warning}</p>}
       </div>
       <div>
         <h3>Available Chat Rooms:</h3>
